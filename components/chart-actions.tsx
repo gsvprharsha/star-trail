@@ -29,10 +29,25 @@ const RedditIcon = () => (
   </svg>
 )
 
+function copyComputedStyles(src: Element, dst: Element): void {
+  const cs = window.getComputedStyle(src)
+  const dstEl = dst as SVGElement
+  if (dstEl.style) {
+    for (const p of ["fill", "stroke", "stroke-width", "stroke-dasharray", "font-size", "font-family", "font-weight"]) {
+      const v = cs.getPropertyValue(p)
+      if (v) dstEl.style.setProperty(p, v)
+    }
+  }
+  for (let i = 0; i < src.children.length; i++) {
+    if (dst.children[i]) copyComputedStyles(src.children[i], dst.children[i])
+  }
+}
+
 async function svgToImg(svg: SVGSVGElement, cr: DOMRect): Promise<HTMLImageElement> {
   const clone = svg.cloneNode(true) as SVGSVGElement
   clone.setAttribute("width", String(cr.width))
   clone.setAttribute("height", String(cr.height))
+  copyComputedStyles(svg, clone)
   const xml = new XMLSerializer().serializeToString(clone)
   const url = URL.createObjectURL(new Blob([xml], { type: "image/svg+xml" }))
   return new Promise((resolve, reject) => {

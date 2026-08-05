@@ -9,6 +9,8 @@ const fontSans = Inter({ subsets: ["latin"], variable: "--font-sans" })
 const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 export const metadata: Metadata = {
+  // Needed so the opengraph-image file convention emits absolute URLs — crawlers reject relative ones.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
   title: "Star Trail",
   description: "Track GitHub repository star history.",
 }

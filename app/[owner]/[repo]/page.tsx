@@ -21,7 +21,24 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { owner, repo } = await params
-  return { title: `${owner}/${repo} — Star Trail` }
+  const found = await db.repository.findUnique({
+    where: { normalized: `${owner.toLowerCase()}/${repo.toLowerCase()}` },
+    select: { owner: true, name: true, stargazerCount: true },
+  })
+
+  const title = `${found?.owner ?? owner}/${found?.name ?? repo} — Star Trail`
+  const description = found
+    ? `${found.stargazerCount.toLocaleString()} stars. Track its star growth on Star Trail.`
+    : "Track GitHub repository star history."
+
+  // Images come from ./opengraph-image.tsx (file convention wins over anything set here).
+  // X has no twitter-image, so it falls back to og:image — this card type makes it full-width.
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: "website" },
+    twitter: { card: "summary_large_image", title, description },
+  }
 }
 
 export default async function RepoPage({ params }: Props) {
