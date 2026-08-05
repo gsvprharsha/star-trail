@@ -7,7 +7,7 @@ import { SiteHeader } from "@/components/site-header"
 export const metadata: Metadata = {
   title: "Which token permissions Star Trail needs — Star Trail",
   description:
-    "A short guide to the GitHub personal access token permissions Star Trail needs, and why the stargazers endpoint now asks for Contents write access.",
+    "A short guide to the Github Token permissions Star Trail needs, and why the stargazers endpoint now asks for Contents write access.",
 }
 
 export default function PermissionsPage() {
@@ -49,7 +49,7 @@ export default function PermissionsPage() {
               rel="noopener noreferrer"
               className="font-medium text-foreground underline underline-offset-4"
             >
-              fine-grained personal access token
+              fine-grained Github Token
             </a>{" "}
             that you create on GitHub. Fine-grained tokens are scoped to specific repositories and
             specific permissions, so you&apos;re never handing over blanket access to your whole

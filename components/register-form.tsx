@@ -45,7 +45,7 @@ export function RegisterForm() {
 
         <div className="flex flex-1 flex-col gap-1.5">
           <label htmlFor="pat" className="text-sm font-medium">
-            Personal Access Token
+            Github Token
           </label>
           <input
             id="pat"

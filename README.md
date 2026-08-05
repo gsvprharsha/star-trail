@@ -1,7 +1,7 @@
 # Star Trail
 
 Track a GitHub repository's star history and generate a chart you can embed
-anywhere. Paste a repo and a Personal Access Token to import its stargazer data,
+anywhere. Paste a repo and a Github Token to import its stargazer data,
 then drop the generated chart into your README or site.
 
 ## Stack
