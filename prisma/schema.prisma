@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Repository {
+  id             String    @id @default(uuid())
+  owner          String
+  name           String
+  normalized     String    @unique
+  description    String?
+  homepage       String?
+  defaultBranch  String?
+  githubUrl      String?
+  stargazerCount Int       @default(0)
+  ownerAvatar    String?
+  visibility     String?
+  ownerLogin     String?
+  starHistory    Json?     // [{ d: "YYYY-MM-DD", c: cumulativeStars }, ...] ordered asc; derived cache, rebuilt from GitHub each sync
+  lastSyncedAt   DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  token Token?
+
+  @@map("repositories")
+}
+
+model Token {
+  id             String     @id @default(uuid())
+  repositoryId   String     @unique
+  encryptedToken String
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  repository Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@map("tokens")
+}
