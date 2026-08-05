@@ -6,6 +6,7 @@ import { Leaderboard } from "@/components/leaderboard"
 import { SiteHeader } from "@/components/site-header"
 import { RegisterForm } from "@/components/register-form"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { YourProjects } from "@/components/your-projects"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -67,6 +68,9 @@ export default function Page() {
         <div className="w-full rounded-xl border bg-card p-6 shadow-sm">
           <RegisterForm />
         </div>
+
+        {/* Your projects (localStorage) */}
+        <YourProjects />
 
         {/* Leaderboard */}
         <Leaderboard />

@@ -6,6 +6,7 @@ import { LockIcon, StarIcon } from "lucide-react"
 
 import { registerRepository } from "@/app/actions"
 import { Button } from "@/components/ui/button"
+import { addYourProject } from "@/components/your-projects"
 
 type State = Awaited<ReturnType<typeof registerRepository>> | null
 
@@ -20,6 +21,7 @@ export function RegisterForm() {
 
   useEffect(() => {
     if (state?.success) {
+      addYourProject(state.data.owner, state.data.name)
       router.push(`/${state.data.owner}/${state.data.name}`)
     }
   }, [state, router])
