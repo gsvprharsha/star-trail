@@ -43,11 +43,7 @@ export function StarChart({ snapshots, caption = "Graph by star-trail.fun" }: Pr
     <div className="flex w-full flex-col gap-2">
       <div className="flex justify-end">
         <span className="inline-flex items-center gap-1.5 text-xs text-foreground">
-          <span
-            aria-hidden
-            className="size-3 rounded-[2px]"
-            style={{ background: "rgb(255,150,50)" }}
-          />
+          <span aria-hidden>⭐</span>
           {current.toLocaleString()}
         </span>
       </div>
