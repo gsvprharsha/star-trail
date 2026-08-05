@@ -14,7 +14,8 @@ interface Props {
 export function EmbedSnippet({ owner, repo, appUrl }: Props) {
   const [copied, setCopied] = useState(false)
   const url = `${appUrl}/api/chart/${owner}/${repo}`
-  const markdown = `![Star Trail](${url})`
+  const pageUrl = `${appUrl}/${owner}/${repo}`
+  const markdown = `[![Star Trail](${url})](${pageUrl})`
 
   async function copy() {
     await navigator.clipboard.writeText(markdown)
