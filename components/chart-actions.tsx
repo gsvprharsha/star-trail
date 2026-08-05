@@ -43,16 +43,51 @@ function copyComputedStyles(src: Element, dst: Element): void {
   }
 }
 
+// SVG rendered via <img> runs in an isolated context with no access to page fonts,
+// so text falls back to the browser default unless @font-face is embedded in the SVG itself.
+let fontCssPromise: Promise<string> | null = null
+async function getInlinedFontCSS(): Promise<string> {
+  if (fontCssPromise) return fontCssPromise
+  fontCssPromise = (async () => {
+    const url = "https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&display=swap"
+    const css = await fetch(url).then((r) => r.text())
+    const urls = [...css.matchAll(/url\((https:\/\/[^)]+\.woff2)\)/g)].map((m) => m[1])
+    const dataUrls = new Map<string, string>()
+    await Promise.all(
+      urls.map(async (u) => {
+        const buf = await fetch(u).then((r) => r.blob())
+        const dataUrl = await new Promise<string>((resolve) => {
+          const fr = new FileReader()
+          fr.onload = () => resolve(fr.result as string)
+          fr.readAsDataURL(buf)
+        })
+        dataUrls.set(u, dataUrl)
+      }),
+    )
+    return css.replace(/url\((https:\/\/[^)]+\.woff2)\)/g, (_, u) => `url(${dataUrls.get(u)})`)
+  })().catch(() => "")
+  return fontCssPromise
+}
+
 async function svgToImg(svg: SVGSVGElement, cr: DOMRect): Promise<HTMLImageElement> {
   const clone = svg.cloneNode(true) as SVGSVGElement
   clone.setAttribute("width", String(cr.width))
   clone.setAttribute("height", String(cr.height))
   copyComputedStyles(svg, clone)
+  const fontCss = await getInlinedFontCSS()
+  if (fontCss) {
+    const style = document.createElementNS("http://www.w3.org/2000/svg", "style")
+    style.textContent = fontCss
+    clone.insertBefore(style, clone.firstChild)
+  }
   const xml = new XMLSerializer().serializeToString(clone)
   const url = URL.createObjectURL(new Blob([xml], { type: "image/svg+xml" }))
   return new Promise((resolve, reject) => {
     const img = new Image()
-    img.onload = () => { URL.revokeObjectURL(url); resolve(img) }
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      resolve(img)
+    }
     img.onerror = reject
     img.src = url
   })
