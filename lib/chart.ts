@@ -23,7 +23,7 @@ const FONT_MONO = "'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace"
 // the font-family stack falls back to whatever Geist/Geist Mono the user has
 // locally, then to system UI fonts.
 const FONT_IMPORT =
-  "@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;600&family=Geist+Mono&display=swap');"
+  "@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;600&amp;family=Geist+Mono&amp;display=swap');"
 
 export function generateStarChart(
   snapshots: { snapshotDate: Date; starCount: number }[],
