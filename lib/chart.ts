@@ -15,7 +15,7 @@ interface ChartOptions {
   color?: DitherColor
 }
 
-const PAD = { top: 32, right: 24, bottom: 40, left: 52 }
+const PAD = { top: 40, right: 24, bottom: 80, left: 52 }
 const FONT_SANS = "'Geist', ui-sans-serif, system-ui, sans-serif"
 const FONT_MONO = "'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace"
 // @import lets standalone SVG viewers pull Geist from Google Fonts; when the
@@ -40,7 +40,7 @@ export function generateStarChart(
   const isDark = theme === "dark"
   const bg = isDark ? "#0a0a0a" : "#ffffff"
   const fg = isDark ? "#e6edf3" : "#1f2328"
-  const grid = isDark ? "#21262d" : "#d0d7de"
+  const grid = isDark ? "#3A3A3A" : "#d0d7de"
 
   const sorted = [...snapshots].sort(
     (a, b) => a.snapshotDate.getTime() - b.snapshotDate.getTime(),
@@ -111,21 +111,34 @@ export function generateStarChart(
     )
     .join("")
 
-  const yTicks = niceTicks(maxCount, 4)
+  const yTicks = niceTicks(maxCount, 5)
   const gridEls = yTicks
     .map((v) => {
       const y = PAD.top + ch - (v / maxCount) * ch
-      return `<line x1="${PAD.left}" y1="${y.toFixed(1)}" x2="${PAD.left + cw}" y2="${y.toFixed(1)}" stroke="${grid}" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/><text x="${PAD.left - 8}" y="${(y + 4).toFixed(1)}" text-anchor="end" fill="${fg}" font-family="${FONT_MONO}" font-size="11" opacity="0.6">${fmt(v)}</text>`
+      return `<line x1="${PAD.left}" y1="${y.toFixed(1)}" x2="${PAD.left + cw}" y2="${y.toFixed(1)}" stroke="${grid}" stroke-width="1" stroke-dasharray="2 2"/><text x="${PAD.left - 8}" y="${(y + 4).toFixed(1)}" text-anchor="end" fill="${fg}" font-family="${FONT_MONO}" font-size="11" opacity="0.6">${fmt(v)}</text>`
     })
     .join("")
 
+  const xTickCount = Math.max(2, Math.min(7, Math.floor(cw / 90)))
+  const xLabelY = PAD.top + ch + 22
+  const xTicks: string[] = []
+  for (let i = 0; i < xTickCount; i++) {
+    const t = minT + (i / (xTickCount - 1)) * tRange
+    const x = PAD.left + (i / (xTickCount - 1)) * cw
+    const label = new Date(t).toLocaleDateString("en-US", { month: "short", day: "2-digit" })
+    xTicks.push(`<text x="${x.toFixed(1)}" y="${xLabelY}" text-anchor="middle" fill="${fg}" font-family="${FONT_MONO}" font-size="11" opacity="0.6">${label}</text>`)
+  }
+
+  const captionY = height - 16
+
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
   <defs><style>${FONT_IMPORT}</style></defs>
-  <rect width="${width}" height="${height}" fill="${bg}" rx="8"/>
+  <rect width="${width}" height="${height}" fill="${bg}" rx="10"/>
   ${gridEls}
+  ${xTicks.join("")}
   <g transform="translate(${PAD.left} ${PAD.top}) scale(${scaleX} ${scaleY})" fill="${fill}" shape-rendering="crispEdges">${dither}</g>
-  <text x="${PAD.left}" y="20" fill="${fg}" font-family="${FONT_SANS}" font-size="13" font-weight="600" opacity="0.9">${escapeXml(repoName)}</text>
-  <text x="${PAD.left + cw}" y="20" text-anchor="end" fill="${fg}" font-family="${FONT_MONO}" font-size="12" opacity="0.5">★ ${maxCount.toLocaleString()}</text>
+  <text x="${width - PAD.right}" y="25" text-anchor="end" fill="${fg}" font-family="${FONT_SANS}" font-size="12" font-weight="600">⭐ ${maxCount.toLocaleString()}</text>
+  <text x="${width - PAD.right}" y="${captionY}" text-anchor="end" fill="${fg}" font-family="${FONT_SANS}" font-size="11" opacity="0.2">Graph by star-trail.fun</text>
 </svg>`
 }
 
