@@ -8,8 +8,10 @@ import { syncRepository } from "@/lib/sync"
 import { toSeries } from "@/lib/history"
 import { manualSync } from "@/app/actions"
 import { StarChart } from "@/components/star-chart"
+import { ChartActions } from "@/components/chart-actions"
 import { EmbedSnippet } from "@/components/embed-snippet"
 import { UpdateTokenForm } from "@/components/update-token-form"
+import { SiteHeader } from "@/components/site-header"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -44,7 +46,10 @@ export default async function RepoPage({ params }: Props) {
     : null
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
+    <>
+      <SiteHeader />
+
+      <div className="mx-auto max-w-3xl px-4 pb-10">
       {/* Header */}
       <div className="mb-8 flex flex-col gap-4">
         <Link
@@ -63,7 +68,7 @@ export default async function RepoPage({ params }: Props) {
                 <img
                   src={fresh.ownerAvatar}
                   alt={fresh.ownerLogin ?? fresh.owner}
-                  className="size-6 rounded-full"
+                  className="size-6 rounded-full border border-border"
                 />
               )}
               <h1 className="text-xl font-semibold tracking-tight">
@@ -111,12 +116,20 @@ export default async function RepoPage({ params }: Props) {
       </div>
 
       {/* Chart */}
-      <div className="mb-8 overflow-hidden rounded-xl border border-border bg-white p-4 dark:bg-[#0a0a0a]">
-        <StarChart
-          snapshots={toSeries(fresh.starHistory).map((s) => ({
-            date: s.snapshotDate.toISOString(),
-            count: s.starCount,
-          }))}
+      <div className="mb-8">
+        <div id="chart-card" className="overflow-hidden rounded-xl border border-border bg-white p-4 dark:bg-[#0a0a0a]">
+          <StarChart
+            snapshots={toSeries(fresh.starHistory).map((s) => ({
+              date: s.snapshotDate.toISOString(),
+              count: s.starCount,
+            }))}
+          />
+        </div>
+        <ChartActions
+          owner={fresh.owner}
+          repo={fresh.name}
+          repoUrl={`${appUrl}/${fresh.owner}/${fresh.name}`}
+          stars={fresh.stargazerCount}
         />
       </div>
 
@@ -127,6 +140,7 @@ export default async function RepoPage({ params }: Props) {
           <UpdateTokenForm repoId={fresh.id} />
         </div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

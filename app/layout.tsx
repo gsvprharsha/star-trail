@@ -20,6 +20,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
       className={cn("antialiased", fontSans.variable, fontMono.variable)}
     >
+      <head>
+        {/* Geist Pixel isn't in next/font yet — load it from Google Fonts directly. */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Geist+Pixel&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
