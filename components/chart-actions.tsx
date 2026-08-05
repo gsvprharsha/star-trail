@@ -118,6 +118,26 @@ async function captureCard(bg: string): Promise<HTMLCanvasElement> {
       } catch {}
     }
   }
+  // HTML text (star count, caption) isn't inside an svg/canvas, so paint it directly.
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
+  let node: Node | null
+  while ((node = walker.nextNode())) {
+    const text = node.textContent
+    if (!text || !text.trim()) continue
+    const parent = node.parentElement
+    if (!parent || parent.closest("svg, canvas")) continue
+    const range = document.createRange()
+    range.selectNodeContents(node)
+    const tr = range.getBoundingClientRect()
+    if (tr.width === 0 || tr.height === 0) continue
+    const cs = window.getComputedStyle(parent)
+    ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`
+    ctx.fillStyle = cs.color
+    ctx.textAlign = "left"
+    ctx.textBaseline = "alphabetic"
+    const fontPx = parseFloat(cs.fontSize)
+    ctx.fillText(text, tr.left - rect.left, tr.bottom - rect.top - fontPx * 0.2)
+  }
   return out
 }
 
