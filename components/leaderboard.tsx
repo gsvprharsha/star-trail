@@ -31,7 +31,7 @@ export async function Leaderboard() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {repos.map((repo, i) => {
+        {repos.map((repo: (typeof repos)[number], i) => {
           const series = toSeries(repo.starHistory).map((s) => s.starCount)
           return (
             <Link
